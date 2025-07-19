@@ -12,10 +12,36 @@ export const axiosInstance = axios.create({
 // Add request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Add any auth headers if needed
+    // Make sure cookies are sent with requests
+    config.withCredentials = true;
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Handle 401 responses
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      // Try to refresh auth state
+      try {
+        await useAuthStore.getState().checkAuth();
+        // Retry the original request
+        return axiosInstance(originalRequest);
+      } catch (error) {
+        // If refresh failed, redirect to login
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+    }
     return Promise.reject(error);
   }
 );
