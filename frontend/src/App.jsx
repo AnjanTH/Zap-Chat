@@ -1,10 +1,13 @@
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import SettingsPage from "./pages/SettingsPage";
 import ProfilePage from "./pages/ProfilePage";
+import NotFoundPage from "./pages/NotFoundPage";
+import LandingPage from "./pages/LandingPage";
 
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
@@ -38,13 +41,16 @@ const App = () => {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
-        <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/" />} />
-        <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/chat" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
+        <Route path="/signup" element={!authUser ? <SignUpPage /> : <Navigate to="/chat" />} />
+        <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/chat" />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
-
+      
+      <Footer />
       <Toaster />
     </div>
   );
