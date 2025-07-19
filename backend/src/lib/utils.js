@@ -5,14 +5,13 @@ export const generateToken = (userId, res) => {
     expiresIn: "7d",
   });
 
-  res.cookie("jwt", token, {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-    httpOnly: true, // prevent XSS attacks
-    sameSite: "none", // needed for cross-site requests
-    secure: true, // needed for sameSite: "none"
-    path: "/",
-    domain: process.env.NODE_ENV === "development" ? "localhost" : ".onrender.com"
-  });
+ res.cookie("jwt", token, {
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+  httpOnly: true,
+  sameSite: "none",
+  secure: true,
+  path: "/"
+});
 
   return token;
 };
