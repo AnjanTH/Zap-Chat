@@ -29,7 +29,15 @@ export const signup = async (req, res) => {
 
     if (newUser) {
       // generate jwt token here
-      generateToken(newUser._id, res);
+      console.log('Generating token for new user:', {
+        userId: newUser._id,
+        email: newUser.email
+      });
+      const token = generateToken(newUser._id, res);
+      console.log('Token generated, cookies set:', {
+        token: token,
+        cookies: res.getHeaders()['set-cookie']
+      });
       await newUser.save();
 
       res.status(201).json({
@@ -61,7 +69,15 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    generateToken(user._id, res);
+    console.log('User found, generating token:', {
+      userId: user._id,
+      email: user.email
+    });
+    const token = generateToken(user._id, res);
+    console.log('Login successful, cookies set:', {
+      token: token,
+      cookies: res.getHeaders()['set-cookie']
+    });
 
     res.status(200).json({
       _id: user._id,
@@ -77,7 +93,9 @@ export const login = async (req, res) => {
 
 export const logout = (req, res) => {
   try {
+    console.log('Logging out user, clearing cookie');
     res.cookie("jwt", "", { maxAge: 0 });
+    console.log('Logout cookies:', res.getHeaders()['set-cookie']);
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.log("Error in logout controller", error.message);
