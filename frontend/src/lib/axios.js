@@ -6,9 +6,11 @@ export const axiosInstance = axios.create({
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
+    'Access-Control-Allow-Credentials': true
   },
   maxRedirects: 5,
-  validateStatus: (status) => status < 500
+  validateStatus: (status) => status < 500,
+  credentials: 'include'
 });
 
 // Add request interceptor
