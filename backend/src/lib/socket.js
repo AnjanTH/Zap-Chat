@@ -6,6 +6,7 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
+  pingTimeout: 60000,
   cors: {
     origin: ["http://localhost:5173", "https://zapchat18.vercel.app"],
     methods: ["GET", "POST"],
@@ -13,6 +14,11 @@ const io = new Server(server, {
     transports: ['websocket', 'polling'],
   },
   allowEIO3: true,
+  cookie: {
+    name: "socket.io",
+    httpOnly: true,
+    sameSite: "lax",
+  }
 });
 
 export function getReceiverSocketId(userId) {
