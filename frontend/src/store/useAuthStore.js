@@ -87,13 +87,27 @@ export const useAuthStore = create((set, get) => ({
     if (!authUser || get().socket?.connected) return;
 
     const socket = io(BASE_URL, {
+      path: "/socket.io/",
       query: {
         userId: authUser._id,
       },
       withCredentials: true,
       transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
     });
     socket.connect();
+
+    // Add connection event handlers
+    socket.on("connect", () => {
+      console.log("Socket connected successfully");
+    });
+
+    socket.on("connect_error", (error) => {
+      console.error("Socket connection error:", error);
+      toast.error("Failed to connect to chat server");
+    });
 
     set({ socket: socket });
 

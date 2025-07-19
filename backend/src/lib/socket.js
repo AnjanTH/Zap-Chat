@@ -6,6 +6,7 @@ const app = express();
 const server = http.createServer(app);
 
 const io = new Server(server, {
+  path: "/socket.io/",
   pingTimeout: 60000,
   cors: {
     origin: ["http://localhost:5173", "https://zapchat18.vercel.app"],

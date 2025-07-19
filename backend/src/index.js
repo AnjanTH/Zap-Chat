@@ -32,10 +32,26 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
+// Handle 404 for API routes
+app.all('/api/*', (req, res) => {
+  console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);
+  res.status(404).json({ 
+    message: "API endpoint not found",
+    path: req.originalUrl,
+    method: req.method 
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ message: "Internal server error" });
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal server error";
+  res.status(statusCode).json({ 
+    message,
+    path: req.originalUrl,
+    method: req.method
+  });
 });
 
 // 404 handler for API routes
