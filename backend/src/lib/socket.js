@@ -7,8 +7,12 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "https://zapchat18.vercel.app"],
+    methods: ["GET", "POST"],
+    credentials: true,
+    transports: ['websocket', 'polling'],
   },
+  allowEIO3: true,
 });
 
 export function getReceiverSocketId(userId) {
