@@ -6,7 +6,9 @@ export const axiosInstance = axios.create({
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
-  }
+  },
+  maxRedirects: 5,
+  validateStatus: (status) => status < 500
 });
 
 // Add request interceptor
