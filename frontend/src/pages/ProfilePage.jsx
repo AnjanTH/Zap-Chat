@@ -6,20 +6,20 @@ const ProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
   const [selectedImg, setSelectedImg] = useState(null);
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+const handleImageUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const reader = new FileReader();
+  const preview = URL.createObjectURL(file);
+  setSelectedImg(preview);
 
-    reader.readAsDataURL(file);
+  const formData = new FormData();
+  formData.append("profilePic", file); // must match 'upload.single("profilePic")'
 
-    reader.onload = async () => {
-      const base64Image = reader.result;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
-    };
-  };
+  await updateProfile(formData);
+};
+
+
 
   return (
     <div className="min-h-screen pt-16 md:pt-20 pb-20">

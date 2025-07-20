@@ -2,7 +2,7 @@ import { generateToken } from "../lib/utils.js";
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
-
+import streamifier from 'streamifier';
 export const signup = async (req, res) => {
   const { fullName, email, password } = req.body;
   try {
@@ -57,23 +57,26 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Email does not exist" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid password" });
     }
 
     console.log('User found, generating token:', {
       userId: user._id,
       email: user.email
     });
+
     const token = generateToken(user._id, res);
+
     console.log('Login successful, cookies set:', {
       token: token,
       cookies: res.getHeaders()['set-cookie']
@@ -91,6 +94,7 @@ export const login = async (req, res) => {
   }
 };
 
+
 export const logout = (req, res) => {
   try {
     console.log('Logging out user, clearing cookie');
@@ -105,26 +109,36 @@ export const logout = (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const { profilePic } = req.body;
-    const userId = req.user._id;
-
-    if (!profilePic) {
-      return res.status(400).json({ message: "Profile pic is required" });
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({ message: "No image file uploaded" });
     }
 
-    const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    const streamUpload = (fileBuffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream((error, result) => {
+          if (result) resolve(result);
+          else reject(error);
+        });
+        streamifier.createReadStream(fileBuffer).pipe(stream);
+      });
+    };
+
+    const result = await streamUpload(file.buffer);
+
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { profilePic: uploadResponse.secure_url },
+      req.user._id,
+      { profilePic: result.secure_url },
       { new: true }
     );
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.log("error in update profile:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Update profile error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const checkAuth = (req, res) => {
   try {
