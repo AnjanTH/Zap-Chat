@@ -48,19 +48,19 @@ const MessageInput = () => {
   };
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4 w-full border-t border-base-300 bg-base-100">
       {imagePreview && (
         <div className="mb-3 flex items-center gap-2">
           <div className="relative">
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-20 h-20 object-cover rounded-lg border border-zinc-700"
+              className="w-20 h-20 object-cover rounded-lg border border-base-300"
             />
             <button
               onClick={removeImage}
-              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300
-              flex items-center justify-center"
+              className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-base-300 hover:bg-base-200
+                         flex items-center justify-center transition-colors"
               type="button"
             >
               <X className="size-3" />
@@ -73,11 +73,12 @@ const MessageInput = () => {
         <div className="flex-1 flex gap-2">
           <input
             type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+            className="flex-1 input input-bordered rounded-lg input-sm sm:input-md focus:outline-none focus:ring-2 focus:ring-primary"
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
+          
           <input
             type="file"
             accept="image/*"
@@ -88,22 +89,34 @@ const MessageInput = () => {
 
           <button
             type="button"
-            className={`hidden sm:flex btn btn-circle
-                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
+            className={`
+              btn btn-circle btn-sm sm:btn-md
+              ${imagePreview ? "text-emerald-500 bg-emerald-50 hover:bg-emerald-100" : "text-base-content/60 hover:text-base-content"}
+              transition-colors
+            `}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Image size={20} />
+            <Image className="size-4 sm:size-5" />
           </button>
         </div>
+        
         <button
           type="submit"
-          className="btn btn-sm btn-circle"
+          className={`
+            btn btn-circle btn-sm sm:btn-md
+            ${(!text.trim() && !imagePreview) 
+              ? "btn-disabled text-base-content/40" 
+              : "btn-primary text-primary-content hover:btn-primary-focus"
+            }
+            transition-colors
+          `}
           disabled={!text.trim() && !imagePreview}
         >
-          <Send size={22} />
+          <Send className="size-4 sm:size-5" />
         </button>
       </form>
     </div>
   );
 };
+
 export default MessageInput;

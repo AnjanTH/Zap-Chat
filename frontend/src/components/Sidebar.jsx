@@ -22,10 +22,20 @@ const Sidebar = () => {
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (
-    <aside className={`fixed md:relative h-[calc(100vh-64px)] md:h-full border-r border-base-300 transition-all duration-200 
-      bg-base-100 z-50 top-16 left-0 w-[280px]
-      ${isSidebarVisible ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}>
-      <div className="border-b border-base-300 w-full p-4 bg-base-100/95 backdrop-blur-sm">
+    <aside
+      className={`
+        fixed md:relative 
+        h-full w-[280px] 
+        border-r border-base-300 bg-base-100 
+        z-50 md:z-auto
+        top-0 md:top-auto left-0 
+        transition-transform duration-200
+        flex flex-col
+        ${isSidebarVisible ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+      `}
+    >
+      {/* Header */}
+      <div className="border-b border-base-300 p-4 bg-base-100/95 backdrop-blur-sm shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Users className="size-5" />
@@ -35,7 +45,7 @@ const Sidebar = () => {
             <span className="text-xs text-base-content/60">
               {onlineUsers.length - 1} online
             </span>
-            <button 
+            <button
               onClick={closeSidebar}
               className="btn btn-ghost btn-sm p-1 hover:bg-base-200 rounded-lg md:hidden"
             >
@@ -43,7 +53,8 @@ const Sidebar = () => {
             </button>
           </div>
         </div>
-        {/* Online filter toggle */}
+
+        {/* Online toggle */}
         <div className="mt-3 flex items-center gap-2">
           <label className="cursor-pointer flex items-center gap-2">
             <input
@@ -57,8 +68,10 @@ const Sidebar = () => {
         </div>
       </div>
 
-      <div className="overflow-y-auto w-full py-2 relative">
-        {filteredUsers.map((user) => (
+      {/* Scrollable User List */}
+      <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="h-full overflow-y-auto py-2">
+          {filteredUsers.map((user) => (
           <button
             key={user._id}
             onClick={() => {
@@ -78,14 +91,10 @@ const Sidebar = () => {
                 className="size-12 object-cover rounded-full"
               />
               {onlineUsers.includes(user._id) && (
-                <span
-                  className="absolute bottom-0 right-0 size-3 bg-green-500 
-                  rounded-full ring-2 ring-zinc-900"
-                />
+                <span className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full ring-2 ring-zinc-900" />
               )}
             </div>
 
-            {/* User info - visible on all screens */}
             <div className="text-left min-w-0 flex-1">
               <div className="font-medium truncate">{user.fullName}</div>
               <div className="text-sm text-base-content/60">
@@ -93,13 +102,15 @@ const Sidebar = () => {
               </div>
             </div>
           </button>
-        ))}
+                  ))}
 
-        {filteredUsers.length === 0 && (
-          <div className="text-center text-zinc-500 py-4">No online users</div>
-        )}
+          {filteredUsers.length === 0 && (
+            <div className="text-center text-zinc-500 py-4">No online users</div>
+          )}
+        </div>
       </div>
     </aside>
   );
 };
+
 export default Sidebar;
