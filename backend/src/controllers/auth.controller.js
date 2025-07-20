@@ -98,14 +98,23 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   try {
     console.log('Logging out user, clearing cookie');
-    res.cookie("jwt", "", { maxAge: 0 });
+
+    res.cookie("jwt", "", {
+      httpOnly: true,
+      secure: true,          // Required for HTTPS (Vercel + Render)
+      sameSite: "None",      // Required for cross-origin cookie clearing
+      expires: new Date(0)   // Immediately expire
+    });
+
     console.log('Logout cookies:', res.getHeaders()['set-cookie']);
+
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
     console.log("Error in logout controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const updateProfile = async (req, res) => {
   try {

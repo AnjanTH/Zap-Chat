@@ -6,11 +6,11 @@ export const generateToken = (userId, res) => {
   });
 
   res.cookie("jwt", token, {
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
-    httpOnly: true, // prevent XSS attacks
-    sameSite: "none", // needed for cross-site requests
-    secure: true, // needed for sameSite: "none"
-    path: "/"
+    httpOnly: true,            
+    secure: true,                 
+    sameSite: "None",             
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",                    
   });
 
   return token;
