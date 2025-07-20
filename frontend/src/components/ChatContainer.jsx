@@ -35,9 +35,11 @@ const ChatContainer = () => {
 
   if (isMessagesLoading) {
     return (
-      <div className="flex-1 flex flex-col overflow-auto">
-        <ChatHeader />
-        <div className="flex-1">
+      <div className="flex-1 flex flex-col overflow-hidden h-full">
+        <div className="shrink-0">
+          <ChatHeader />
+        </div>
+        <div className="flex-1 overflow-hidden">
           <MessageSkeleton />
         </div>
         <div className="shrink-0">
@@ -48,10 +50,14 @@ const ChatContainer = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full">
-      <ChatHeader />
+    <div className="flex-1 flex flex-col overflow-hidden h-full">
+      {/* Header - fixed at top */}
+      <div className="shrink-0">
+        <ChatHeader />
+      </div>
       
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Messages area - scrollable middle section */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
         {messages.map((message, index) => (
           <div
             key={message._id}
@@ -90,6 +96,7 @@ const ChatContainer = () => {
         <div ref={messageEndRef} />
       </div>
 
+      {/* Message Input - fixed at bottom */}
       <div className="shrink-0">
         <MessageInput />
       </div>

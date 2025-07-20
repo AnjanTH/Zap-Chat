@@ -30,91 +30,107 @@ const App = () => {
     }
   }, [checkAuth]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  // Loading screen component
+  const LoadingScreen = () => (
+    <div className="flex items-center justify-center min-h-screen pt-16 pb-16">
+      <Loader className="size-10 animate-spin" />
+    </div>
+  );
+
   if (isCheckingAuth && !authUser) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <Loader className="size-10 animate-spin" />
+      <div className="min-h-screen bg-base-200" data-theme={theme}>
+        <Navbar />
+        <LoadingScreen />
+        <Footer />
+        <Toaster />
       </div>
     );
   }
 
   return (
-    <div data-theme={theme}>
+    <div className="min-h-screen bg-base-200" data-theme={theme}>
       <Navbar />
 
-      <Routes>
-        <Route
-  path="/"
-  element={authUser ? <Navigate to="/chat"/> : <LandingPage />}
-/>
+      {/* Main content area with proper spacing for navbar and footer */}
+      <main className="pt-16 pb-16 min-h-screen">
+        <Routes>
+          <Route
+            path="/"
+            element={authUser ? <Navigate to="/chat" /> : <LandingPage />}
+          />
 
+          {/* ✅ PROTECTED ROUTE */}
+          <Route
+            path="/chat"
+            element={
+              isCheckingAuth ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader className="size-10 animate-spin" />
+                </div>
+              ) : authUser ? (
+                <HomePage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
 
-        {/* ✅ PROTECTED ROUTE */}
-        <Route
-          path="/chat"
-          element={
-            isCheckingAuth ? (
-              <div className="flex items-center justify-center h-screen">
-                <Loader className="size-10 animate-spin" />
-              </div>
-            ) : authUser ? (
-              <HomePage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
+          {/* ✅ REDIRECT IF LOGGED IN */}
+          <Route
+            path="/signup"
+            element={
+              isCheckingAuth ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader className="size-10 animate-spin" />
+                </div>
+              ) : !authUser ? (
+                <SignUpPage />
+              ) : (
+                <Navigate to="/chat" />
+              )
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              isCheckingAuth ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader className="size-10 animate-spin" />
+                </div>
+              ) : !authUser ? (
+                <LoginPage />
+              ) : (
+                <Navigate to="/chat" />
+              )
+            }
+          />
 
-        {/* ✅ REDIRECT IF LOGGED IN */}
-        <Route
-          path="/signup"
-          element={
-            isCheckingAuth ? (
-              <div className="flex items-center justify-center h-screen">
-                <Loader className="size-10 animate-spin" />
-              </div>
-            ) : !authUser ? (
-              <SignUpPage />
-            ) : (
-              <Navigate to="/chat" />
-            )
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            isCheckingAuth ? (
-              <div className="flex items-center justify-center h-screen">
-                <Loader className="size-10 animate-spin" />
-              </div>
-            ) : !authUser ? (
-              <LoginPage />
-            ) : (
-              <Navigate to="/chat" />
-            )
-          }
-        />
+          {/* ❗Allow open access to settings, or protect it if needed */}
+          <Route path="/settings" element={<SettingsPage />} />
 
-        {/* ❗Allow open access to settings, or protect it if needed */}
-        <Route path="/settings" element={<SettingsPage />} />
+          <Route
+            path="/profile"
+            element={
+              isCheckingAuth ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader className="size-10 animate-spin" />
+                </div>
+              ) : authUser ? (
+                <ProfilePage />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
 
-        <Route
-          path="/profile"
-          element={
-            isCheckingAuth ? (
-              <div className="flex items-center justify-center h-screen">
-                <Loader className="size-10 animate-spin" />
-              </div>
-            ) : authUser ? (
-              <ProfilePage />
-            ) : (
-              <Navigate to="/login" />
-            )
-          }
-        />
-
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </main>
 
       <Footer />
       <Toaster />
